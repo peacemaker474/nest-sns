@@ -3,42 +3,6 @@ import { Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
-export interface PostModal {
-  id: number;
-  author: string;
-  title: string;
-  content: string;
-  likeCount: number;
-  commnetCount: number;
-}
-
-let posts: PostModal[] = [
-  {
-    id: 1,
-    author: 'New Jeans',
-    title: '뉴진스 민지',
-    content: '메이크업 고치고 있는 민지',
-    likeCount: 999,
-    commnetCount: 23,
-  },
-  {
-    id: 2,
-    author: 'New Jeans',
-    title: '뉴진스 해린',
-    content: '노래 연습하고 있는 해린',
-    likeCount: 999,
-    commnetCount: 23,
-  },
-  {
-    id: 3,
-    author: 'BlackPink',
-    title: '블랙핑크 로제',
-    content: '종합운동장에서 공연하고 있는 로제',
-    likeCount: 999,
-    commnetCount: 23,
-  },
-];
-
 @Injectable()
 export class PostsService {
   constructor(
@@ -46,12 +10,16 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsModel>,
   ) {}
 
-  getAllPosts() {
-    return posts;
+  async getAllPosts() {
+    return this.postsRepository.find();
   }
 
-  getPostById(postId: number) {
-    const post = posts.find((post) => post.id === postId);
+  async getPostById(postId: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: postId,
+      },
+    });
 
     if (!post) {
       throw new NotFoundException();
@@ -60,28 +28,27 @@ export class PostsService {
     return post;
   }
 
-  createPost(author: string, title: string, content: string) {
-    const post: PostModal = {
-      id: posts[posts.length - 1].id + 1,
+  async createPost(author: string, title: string, content: string) {
+    const post = this.postsRepository.create({
       author,
       title,
       content,
       likeCount: 0,
-      commnetCount: 0,
-    };
+      commentCount: 0,
+    });
 
-    posts = [...posts, post];
+    const newPost = await this.postsRepository.save(post);
 
-    return post;
+    return newPost;
   }
 
-  updatePost(
+  async updatePost(
     postId: number,
     author?: string,
     title?: string,
     content?: string,
   ) {
-    const post = this.getPostById(postId);
+    const post = await this.getPostById(postId);
 
     if (author) {
       post.author = author;
@@ -95,15 +62,15 @@ export class PostsService {
       post.content = content;
     }
 
-    posts = posts.map((prevPost) => (prevPost.id === postId ? post : prevPost));
+    const newPost = await this.postsRepository.save(post);
 
-    return post;
+    return newPost;
   }
 
-  deletePost(postId: number) {
-    const post = this.getPostById(postId);
+  async deletePost(postId: number) {
+    const post = await this.getPostById(postId);
 
-    posts = posts.filter((post) => post.id !== postId);
+    await this.postsRepository.delete(post.id);
 
     return post.id;
   }
