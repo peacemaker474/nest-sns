@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { PostsModel } from './posts/entities/posts.entity';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModel } from './users/entities/users.entity';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -15,7 +16,7 @@ import { UsersModule } from './users/users.module';
       username: 'postgres',
       password: 'postgres',
       database: 'postgres',
-      entities: [PostsModel],
+      entities: [PostsModel, UsersModel],
       synchronize: true, // Production 환경에서는 false
     }),
     UsersModule,
