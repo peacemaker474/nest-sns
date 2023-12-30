@@ -64,9 +64,12 @@ export class AuthService {
   async registerWithEmail(
     user: Pick<UsersModel, 'email' | 'nickname' | 'password'>,
   ) {
-    const hashPassword = bcrypt.hash(user.password, HASH_ROUNDS);
+    const hashPassword = await bcrypt.hash(user.password, HASH_ROUNDS);
 
-    const newUser = await this.usersService.createUser(user);
+    const newUser = await this.usersService.createUser({
+      ...user,
+      password: hashPassword,
+    });
 
     return this.loginUser(newUser);
   }
