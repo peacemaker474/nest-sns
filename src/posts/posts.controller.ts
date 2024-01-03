@@ -12,6 +12,7 @@ import {
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -29,12 +30,8 @@ export class PostsController {
 
   @Post()
   @UseGuards(AccessTokenGuard)
-  postPosts(
-    @User('id') userId: number,
-    @Body('title') title: string,
-    @Body('content') content: string,
-  ) {
-    return this.postsService.createPost(userId, title, content);
+  postPosts(@User('id') userId: number, @Body() postData: CreatePostDto) {
+    return this.postsService.createPost(userId, postData);
   }
 
   @Patch(':id')
