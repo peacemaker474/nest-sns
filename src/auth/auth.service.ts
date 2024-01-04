@@ -4,6 +4,7 @@ import { HASH_ROUNDS, JWT_SECRET } from './constants/auth';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 
@@ -61,13 +62,11 @@ export class AuthService {
     return this.loginUser(existedUser);
   }
 
-  async registerWithEmail(
-    user: Pick<UsersModel, 'email' | 'nickname' | 'password'>,
-  ) {
-    const hashPassword = await bcrypt.hash(user.password, HASH_ROUNDS);
+  async registerWithEmail(registerData: RegisterUserDto) {
+    const hashPassword = await bcrypt.hash(registerData.password, HASH_ROUNDS);
 
     const newUser = await this.usersService.createUser({
-      ...user,
+      ...registerData,
       password: hashPassword,
     });
 
