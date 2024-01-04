@@ -7,6 +7,7 @@ import {
 } from 'src/common/validation/message';
 
 import { BaseModel } from 'src/common/entity/base.entity';
+import { Exclude } from 'class-transformer';
 import { PostsModel } from 'src/posts/entities/posts.entity';
 import { USER_ROLE } from '../constants/roles.enum';
 
@@ -37,6 +38,9 @@ export class UsersModel extends BaseModel {
   email: string;
 
   @Column()
+  @Exclude({
+    toPlainOnly: true,
+  })
   @IsString({
     message: validationStringMessage,
   })
