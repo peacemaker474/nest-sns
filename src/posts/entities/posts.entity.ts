@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { IsString } from 'class-validator';
 import { UsersModel } from 'src/users/entities/users.entity';
+import { validationStringMessage } from 'src/common/validation/message';
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -13,13 +14,13 @@ export class PostsModel extends BaseModel {
 
   @Column()
   @IsString({
-    message: '제목은 문자열을 입력해줘야 합니다.',
+    message: validationStringMessage,
   })
   title: string;
 
   @Column()
   @IsString({
-    message: '내용은 문자열을 입력해줘야 합니다.',
+    message: validationStringMessage,
   })
   content: string;
 
