@@ -46,10 +46,10 @@ export class PostsService {
   async cursorPaginatePosts(query: PaginatePostDto) {
     const where: FindOptionsWhere<PostsModel> = {};
 
-    if (query.where__id_less_than) {
-      where.id = LessThan(query.where__id_less_than);
-    } else if (query.where__id_more_than) {
-      where.id = MoreThan(query.where__id_more_than);
+    if (query.where__id__less_than) {
+      where.id = LessThan(query.where__id__less_than);
+    } else if (query.where__id__more_than) {
+      where.id = MoreThan(query.where__id__more_than);
     }
 
     const posts = await this.postsRepository.find({
@@ -70,8 +70,8 @@ export class PostsService {
       for (const key of Object.keys(query)) {
         if (
           query[key] &&
-          key !== 'where__id_more_than' &&
-          key !== 'where__id_less_than'
+          key !== 'where__id__more_than' &&
+          key !== 'where__id__less_than'
         ) {
           nextUrl.searchParams.append(key, query[key]);
         }
@@ -80,9 +80,9 @@ export class PostsService {
       let key = null;
 
       if (query.order__createdAt === 'ASC') {
-        key = 'where__id_more_than';
+        key = 'where__id__more_than';
       } else {
-        key = 'where__id_less_than';
+        key = 'where__id__less_than';
       }
 
       nextUrl.searchParams.append(key, lastPost.id.toString());
