@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CommonModule } from './common/common.module';
 import { PostsModel } from './posts/entities/posts.entity';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -25,6 +26,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     PostsModule,
     AuthModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [

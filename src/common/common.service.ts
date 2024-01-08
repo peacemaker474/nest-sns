@@ -5,6 +5,7 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+import { HOST, PROTOCOL } from './constants/env';
 
 import { BaseModel } from './entity/base.entity';
 import { BasePaginationDto } from './dto/base-pagination.dto';
@@ -29,7 +30,19 @@ export class CommonService {
     query: BasePaginationDto,
     repository: Repository<BaseModel>,
     overrideFindOptions: FindManyOptions<T> = {},
-  ) {}
+  ) {
+    const findOptions = this.composeFindOptions<T>(query);
+
+    const [data, count] = await repository.findAndCount({
+      ...(findOptions as any),
+      ...overrideFindOptions,
+    });
+
+    return {
+      data,
+      total: count,
+    };
+  }
 
   private async cursorPaginate<T extends BaseModel>(
     query: BasePaginationDto,
@@ -38,6 +51,48 @@ export class CommonService {
     path: string,
   ) {
     const findOptions = this.composeFindOptions<T>(query);
+
+    const results = await repository.find({
+      ...(findOptions as any),
+      ...(overrideFindOptions as any),
+    });
+
+    const lastPost =
+      results.length > 0 && results.length === query.take
+        ? results[results.length - 1]
+        : null;
+    const nextUrl = lastPost && new URL(`${PROTOCOL}://${HOST}/${path}`);
+
+    if (nextUrl) {
+      for (const key of Object.keys(query)) {
+        if (
+          query[key] &&
+          key !== 'where__id__more_than' &&
+          key !== 'where__id__less_than'
+        ) {
+          nextUrl.searchParams.append(key, query[key]);
+        }
+      }
+
+      let key = null;
+
+      if (query.order__createdAt === 'ASC') {
+        key = 'where__id__more_than';
+      } else {
+        key = 'where__id__less_than';
+      }
+
+      nextUrl.searchParams.append(key, lastPost.id.toString());
+    }
+
+    return {
+      data: results,
+      cursor: {
+        after: lastPost?.id ?? null,
+      },
+      count: results.length,
+      next: nextUrl?.toString() ?? null,
+    };
   }
 
   private composeFindOptions<T extends BaseModel>(
