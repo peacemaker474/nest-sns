@@ -26,7 +26,9 @@ export class PostsService {
     return this.commonService.paginate(
       query,
       this.postsRepository,
-      {},
+      {
+        relations: ['author'],
+      },
       'posts',
     );
   }

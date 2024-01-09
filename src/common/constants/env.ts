@@ -1,2 +1,11 @@
-export const PROTOCOL = 'http';
-export const HOST = 'localhost:3000';
+export const ENV_KEY = {
+  PROTOCOL: 'PROTOCOL',
+  HOST: 'HOST',
+  JWT_SECRET_KEY: 'JWT_SECRET',
+  HASH_ROUNDS: 'HASH_ROUNDS',
+  DB_HOST: 'DB_HOST',
+  DB_PORT: 'DB_PORT',
+  DB_USERNAME: 'DB_USERNAME',
+  DB_PASSWORD: 'DB_PASSWORD',
+  DB_DATABASE: 'DB_DATABASE',
+} as const;

@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcrypt';
 
-import { HASH_ROUNDS, JWT_SECRET } from './constants/auth';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
+import { ConfigService } from '@nestjs/config';
+import { ENV_KEY } from 'src/common/constants/env';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UsersModel } from 'src/users/entities/users.entity';
@@ -13,6 +14,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private readonly configServce: ConfigService,
   ) {}
 
   signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
@@ -23,7 +25,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: JWT_SECRET,
+      secret: this.configServce.get<string>(ENV_KEY.JWT_SECRET_KEY),
       expiresIn: isRefreshToken ? 3600 : 300,
     });
   }
@@ -63,7 +65,10 @@ export class AuthService {
   }
 
   async registerWithEmail(registerData: RegisterUserDto) {
-    const hashPassword = await bcrypt.hash(registerData.password, HASH_ROUNDS);
+    const hashPassword = await bcrypt.hash(
+      registerData.password,
+      this.configServce.get<string>(ENV_KEY.HASH_ROUNDS),
+    );
 
     const newUser = await this.usersService.createUser({
       ...registerData,
@@ -107,7 +112,7 @@ export class AuthService {
   verifyToken(token: string) {
     try {
       return this.jwtService.verify(token, {
-        secret: JWT_SECRET,
+        secret: this.configServce.get<string>(ENV_KEY.JWT_SECRET_KEY),
       });
     } catch {
       throw new UnauthorizedException('토큰이 만료됐거나, 잘못된 토큰입니다.');
@@ -116,7 +121,7 @@ export class AuthService {
 
   reissueToken(token: string, isRefreshToken: boolean) {
     const decoded = this.jwtService.verify(token, {
-      secret: JWT_SECRET,
+      secret: this.configServce.get<string>(ENV_KEY.JWT_SECRET_KEY),
     });
 
     if (decoded.type !== 'refresh') {

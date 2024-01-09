@@ -5,14 +5,17 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { HOST, PROTOCOL } from './constants/env';
 
 import { BaseModel } from './entity/base.entity';
 import { BasePaginationDto } from './dto/base-pagination.dto';
+import { ConfigService } from '@nestjs/config';
+import { ENV_KEY } from './constants/env';
 import { FILTER_MAPPER } from './constants/filter-mapper';
 
 @Injectable()
 export class CommonService {
+  constructor(private readonly configService: ConfigService) {}
+
   paginate<T extends BaseModel>(
     query: BasePaginationDto,
     repository: Repository<BaseModel>,
@@ -61,7 +64,11 @@ export class CommonService {
       results.length > 0 && results.length === query.take
         ? results[results.length - 1]
         : null;
-    const nextUrl = lastPost && new URL(`${PROTOCOL}://${HOST}/${path}`);
+
+    const protocol = this.configService.get<string>(ENV_KEY.PROTOCOL);
+    const host = this.configService.get<string>(ENV_KEY.HOST);
+
+    const nextUrl = lastPost && new URL(`${protocol}://${host}/${path}`);
 
     if (nextUrl) {
       for (const key of Object.keys(query)) {
