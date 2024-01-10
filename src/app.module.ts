@@ -6,8 +6,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
+import { PUBLIC_FOLDER_PATH } from './common/constants/path';
 import { PostsModel } from './posts/entities/posts.entity';
 import { PostsModule } from './posts/posts.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModel } from './users/entities/users.entity';
 import { UsersModule } from './users/users.module';
@@ -27,6 +29,10 @@ import { UsersModule } from './users/users.module';
       database: process.env.DB_DATABASE,
       entities: [PostsModel, UsersModel],
       synchronize: true, // Production 환경에서는 false
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: PUBLIC_FOLDER_PATH,
+      serveRoot: '/public',
     }),
     UsersModule,
     PostsModule,
