@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
+import { ImageModel } from './common/entity/image.entity';
 import { PUBLIC_FOLDER_PATH } from './common/constants/path';
 import { PostsModel } from './posts/entities/posts.entity';
 import { PostsModule } from './posts/posts.module';
@@ -27,7 +28,7 @@ import { UsersModule } from './users/users.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [PostsModel, UsersModel],
+      entities: [PostsModel, UsersModel, ImageModel],
       synchronize: true, // Production 환경에서는 false
     }),
     ServeStaticModule.forRoot({
