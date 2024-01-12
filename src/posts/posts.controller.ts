@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   Patch,
   Post,
@@ -17,10 +18,16 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { ImageModelType } from 'src/common/entity/image.entity';
+import { DataSource } from 'typeorm';
+import { PostsImagesService } from './image/images.service';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly postsImagesService: PostsImagesService,
+    private readonly dataSource: DataSource,
+  ) {}
 
   @Get()
   getPosts(@Query() query: PaginatePostDto) {
@@ -35,18 +42,33 @@ export class PostsController {
   @Post()
   @UseGuards(AccessTokenGuard)
   async postPosts(@User('id') userId: number, @Body() postData: CreatePostDto) {
-    const post = await this.postsService.createPost(userId, postData);
+    const qr = this.dataSource.createQueryRunner();
 
-    for (let i = 0; i < postData.images.length; i++) {
-      await this.postsService.createPostImage({
-        post,
-        order: i + 1,
-        path: postData.images[i],
-        type: ImageModelType.POST_IMAGE,
-      });
+    await qr.connect();
+    await qr.startTransaction();
+
+    try {
+      const post = await this.postsService.createPost(userId, postData, qr);
+
+      for (let i = 0; i < postData.images.length; i++) {
+        await this.postsImagesService.createPostImage({
+          post,
+          order: i + 1,
+          path: postData.images[i],
+          type: ImageModelType.POST_IMAGE,
+        });
+      }
+
+      await qr.commitTransaction();
+      await qr.release();
+
+      return this.postsService.getPostById(post.id);
+    } catch (error) {
+      await qr.rollbackTransaction();
+      await qr.release();
+
+      throw new InternalServerErrorException('서버 에러가 발생하였습니다.');
     }
-
-    return this.postsService.getPostById(post.id);
   }
 
   @Patch(':id')
