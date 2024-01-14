@@ -1,4 +1,5 @@
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/exception/http.exception-filter';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -15,6 +16,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000);
 }
