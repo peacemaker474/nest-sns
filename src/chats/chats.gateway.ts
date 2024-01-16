@@ -12,12 +12,17 @@ import { Server, Socket } from 'socket.io';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatsService } from './chats.service';
 import { EnterChatDto } from './dto/enter-chat.dto';
+import { CreateMessagesDto } from './messages/dto/create-messages.dto';
+import { ChatsMessagesService } from './messages/messages.service';
 
 @WebSocketGateway({
   namespace: 'chats',
 })
 export class ChatsGateway implements OnGatewayConnection {
-  constructor(private readonly chatsService: ChatsService) {}
+  constructor(
+    private readonly chatsService: ChatsService,
+    private readonly messagesService: ChatsMessagesService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -55,16 +60,21 @@ export class ChatsGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('send_message')
-  sendMessage(
+  async sendMessage(
     @MessageBody()
-    message: {
-      message: string;
-      chatId: number;
-    },
+    data: CreateMessagesDto,
     @ConnectedSocket() socket: Socket,
   ) {
+    const chatExists = await this.chatsService.checkExistChat(data.chatId);
+
+    if (!chatExists) {
+      throw new WsException('존재하지 않는 채팅방입니다.');
+    }
+
+    const message = await this.messagesService.createMessage(data);
+
     socket
-      .to(message.chatId.toString())
+      .to(message.chat.id.toString())
       .emit('receive_message', message.message);
   }
 }
