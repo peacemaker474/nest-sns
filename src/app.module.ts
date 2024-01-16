@@ -4,6 +4,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ChatsModel } from './chats/entity/chats.entity';
+import { ChatsModule } from './chats/chats.module';
 import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import { ImageModel } from './common/entity/image.entity';
@@ -14,7 +16,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModel } from './users/entities/users.entity';
 import { UsersModule } from './users/users.module';
-import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { ChatsModule } from './chats/chats.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [PostsModel, UsersModel, ImageModel],
+      entities: [PostsModel, UsersModel, ImageModel, ChatsModel],
       synchronize: true, // Production 환경에서는 false
     }),
     ServeStaticModule.forRoot({
