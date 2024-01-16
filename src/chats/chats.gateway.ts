@@ -5,11 +5,13 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 
 import { Server, Socket } from 'socket.io';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatsService } from './chats.service';
+import { EnterChatDto } from './dto/enter-chat.dto';
 
 @WebSocketGateway({
   namespace: 'chats',
@@ -34,10 +36,22 @@ export class ChatsGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('enter_chat')
-  enterChat(@MessageBody() data: number[], @ConnectedSocket() socket: Socket) {
-    for (const chatId of data) {
-      socket.join(chatId.toString());
+  async enterChat(
+    @MessageBody() data: EnterChatDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    for (const chatId of data.chatIds) {
+      const exists = await this.chatsService.checkExistChat(chatId);
+
+      if (!exists) {
+        throw new WsException({
+          code: 100,
+          message: `존재하지 않는 채팅방입니다. ChatID: ${chatId}`,
+        });
+      }
     }
+
+    socket.join(data.chatIds.map((v) => v.toString()));
   }
 
   @SubscribeMessage('send_message')
