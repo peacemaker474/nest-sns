@@ -30,6 +30,7 @@ export class ChatsGateway implements OnGatewayConnection {
     @ConnectedSocket() socket: Socket,
   ) {
     const chat = await this.chatsService.createChat(data);
+    return chat;
   }
 
   @SubscribeMessage('enter_chat')

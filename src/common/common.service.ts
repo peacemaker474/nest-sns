@@ -18,7 +18,7 @@ export class CommonService {
 
   paginate<T extends BaseModel>(
     query: BasePaginationDto,
-    repository: Repository<BaseModel>,
+    repository: Repository<T>,
     overrideFindOptions: FindManyOptions<T> = {},
     path: string,
   ) {
@@ -31,7 +31,7 @@ export class CommonService {
 
   private async pagePaginate<T extends BaseModel>(
     query: BasePaginationDto,
-    repository: Repository<BaseModel>,
+    repository: Repository<T>,
     overrideFindOptions: FindManyOptions<T> = {},
   ) {
     const findOptions = this.composeFindOptions<T>(query);
@@ -49,7 +49,7 @@ export class CommonService {
 
   private async cursorPaginate<T extends BaseModel>(
     query: BasePaginationDto,
-    repository: Repository<BaseModel>,
+    repository: Repository<T>,
     overrideFindOptions: FindManyOptions<T> = {},
     path: string,
   ) {
