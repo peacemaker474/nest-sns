@@ -2,7 +2,7 @@ import { Entity, ManyToMany, OneToMany } from 'typeorm';
 
 import { BaseModel } from 'src/common/entity/base.entity';
 import { MessagesModel } from '../messages/entity/messages.entity';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { UsersModel } from 'src/users/entity/users.entity';
 
 @Entity()
 export class ChatsModel extends BaseModel {

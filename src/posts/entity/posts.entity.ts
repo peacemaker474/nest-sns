@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { ImageModel } from 'src/common/entity/image.entity';
 import { IsString } from 'class-validator';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { UsersModel } from 'src/users/entity/users.entity';
 import { validationStringMessage } from 'src/common/validation/message';
 
 @Entity()

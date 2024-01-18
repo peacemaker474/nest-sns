@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { ENV_KEY } from 'src/common/constants/env';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { UsersModel } from 'src/users/entity/users.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()

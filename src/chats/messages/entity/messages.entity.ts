@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { ChatsModel } from 'src/chats/entity/chats.entity';
 import { IsString } from 'class-validator';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { UsersModel } from 'src/users/entity/users.entity';
 
 @Entity()
 export class MessagesModel extends BaseModel {

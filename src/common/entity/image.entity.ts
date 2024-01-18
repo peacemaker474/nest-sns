@@ -3,7 +3,7 @@ import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 import { BaseModel } from './base.entity';
 import { POST_PUBLIC_IMAGE_PATH } from '../constants/path';
-import { PostsModel } from 'src/posts/entities/posts.entity';
+import { PostsModel } from 'src/posts/entity/posts.entity';
 import { Transform } from 'class-transformer';
 import { join } from 'path';
 

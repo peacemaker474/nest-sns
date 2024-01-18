@@ -10,7 +10,7 @@ import { BaseModel } from 'src/common/entity/base.entity';
 import { ChatsModel } from 'src/chats/entity/chats.entity';
 import { Exclude } from 'class-transformer';
 import { MessagesModel } from 'src/chats/messages/entity/messages.entity';
-import { PostsModel } from 'src/posts/entities/posts.entity';
+import { PostsModel } from 'src/posts/entity/posts.entity';
 import { USER_ROLE } from '../constants/roles.enum';
 
 @Entity()

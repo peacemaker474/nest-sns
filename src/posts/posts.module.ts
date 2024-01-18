@@ -4,7 +4,7 @@ import { ImageModel } from 'src/common/entity/image.entity';
 import { Module } from '@nestjs/common';
 import { PostsController } from './posts.controller';
 import { PostsImagesService } from './image/images.service';
-import { PostsModel } from './entities/posts.entity';
+import { PostsModel } from './entity/posts.entity';
 import { PostsService } from './posts.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
