@@ -8,6 +8,7 @@ import {
 
 import { BaseModel } from 'src/common/entity/base.entity';
 import { ChatsModel } from 'src/chats/entity/chats.entity';
+import { CommentsModel } from 'src/posts/comments/entity/comments.entity';
 import { Exclude } from 'class-transformer';
 import { MessagesModel } from 'src/chats/messages/entity/messages.entity';
 import { PostsModel } from 'src/posts/entity/posts.entity';
@@ -59,6 +60,9 @@ export class UsersModel extends BaseModel {
 
   @OneToMany(() => PostsModel, (post) => post.author)
   posts: PostsModel[];
+
+  @OneToMany(() => CommentsModel, (comment) => comment.author)
+  postComments: CommentsModel[];
 
   @ManyToMany(() => ChatsModel, (chat) => chat.users)
   @JoinTable()
