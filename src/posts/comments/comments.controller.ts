@@ -1,6 +1,19 @@
 import { CommentsService } from './comments.service';
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { PagniateCommentsDto } from './dto/paginate-comments.dto';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { CreateCommentsDto } from './dto/create-comments.dto';
+import { User } from 'src/users/decorator/user.decorator';
+import { UsersModel } from 'src/users/entity/users.entity';
 
 @Controller('posts/:pid/comments')
 export class CommentsController {
@@ -12,5 +25,20 @@ export class CommentsController {
     @Param('pid', ParseIntPipe) pid: number,
   ) {
     return this.commentsService.paginateComments(query, pid);
+  }
+
+  @Get(':cid')
+  getCommnet(@Param('cid', ParseIntPipe) cid: number) {
+    return this.commentsService.getCommentById(cid);
+  }
+
+  @Post()
+  @UseGuards(AccessTokenGuard)
+  postComment(
+    @Param('pid', ParseIntPipe) pid: number,
+    @Body() commentData: CreateCommentsDto,
+    @User() user: UsersModel,
+  ) {
+    return this.commentsService.createComment(pid, commentData, user);
   }
 }

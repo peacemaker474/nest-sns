@@ -1,9 +1,11 @@
 import { CommonService } from 'src/common/common.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PagniateCommentsDto } from './dto/paginate-comments.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentsModel } from './entity/comments.entity';
 import { Repository } from 'typeorm';
+import { CreateCommentsDto } from './dto/create-comments.dto';
+import { UsersModel } from 'src/users/entity/users.entity';
 
 @Injectable()
 export class CommentsService {
@@ -23,8 +25,42 @@ export class CommentsService {
             id: pid,
           },
         },
+        relations: {
+          author: true,
+        },
       },
       `posts/${pid}/commnets`,
     );
+  }
+
+  async getCommentById(id: number) {
+    const comment = await this.commentsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        author: true,
+      },
+    });
+
+    if (!comment) {
+      throw new BadRequestException('존재하지 않는 댓글입니다.');
+    }
+
+    return comment;
+  }
+
+  async createComment(
+    postId: number,
+    commentData: CreateCommentsDto,
+    author: UsersModel,
+  ) {
+    return this.commentsRepository.save({
+      ...commentData,
+      post: {
+        id: postId,
+      },
+      author,
+    });
   }
 }
