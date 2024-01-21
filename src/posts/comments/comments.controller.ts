@@ -9,20 +9,20 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { PagniateCommentsDto } from './dto/paginate-comments.dto';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { CreateCommentsDto } from './dto/create-comments.dto';
 import { User } from 'src/users/decorator/user.decorator';
 import { UsersModel } from 'src/users/entity/users.entity';
 import { UpdateCommentsDto } from './dto/patch-comments.dto';
+import { IsPublic } from 'src/common/decorator/public.decorator';
 
 @Controller('posts/:pid/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Get()
+  @IsPublic()
   getComments(
     @Query() query: PagniateCommentsDto,
     @Param('pid', ParseIntPipe) pid: number,
@@ -31,12 +31,12 @@ export class CommentsController {
   }
 
   @Get(':cid')
+  @IsPublic()
   getCommnet(@Param('cid', ParseIntPipe) cid: number) {
     return this.commentsService.getCommentById(cid);
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   postComment(
     @Param('pid', ParseIntPipe) pid: number,
     @Body() commentData: CreateCommentsDto,
@@ -46,7 +46,6 @@ export class CommentsController {
   }
 
   @Patch(':cid')
-  @UseGuards(AccessTokenGuard)
   async patchComment(
     @Param('cid', ParseIntPipe) cid: number,
     @Body() commentData: UpdateCommentsDto,
@@ -55,7 +54,6 @@ export class CommentsController {
   }
 
   @Delete(':cid')
-  @UseGuards(AccessTokenGuard)
   async deleteComment(@Param('cid', ParseIntPipe) cid: number) {
     return this.commentsService.deleteComment(cid);
   }
