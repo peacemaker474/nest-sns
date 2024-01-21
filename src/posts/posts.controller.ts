@@ -22,6 +22,8 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { PostsImagesService } from './image/images.service';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction';
 import { CustomQueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { Roles } from 'src/users/decorator/roles.decorator';
+import { USER_ROLE } from 'src/users/constants/roles.enum';
 
 @Controller('posts')
 export class PostsController {
@@ -72,6 +74,8 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @UseGuards(AccessTokenGuard)
+  @Roles(USER_ROLE.ADMIN)
   deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(+id);
   }

@@ -1,6 +1,6 @@
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -15,6 +15,7 @@ import { MessagesModel } from './chats/messages/entity/messages.entity';
 import { PUBLIC_FOLDER_PATH } from './common/constants/path';
 import { PostsModel } from './posts/entity/posts.entity';
 import { PostsModule } from './posts/posts.module';
+import { RolesGuard } from './users/guard/roles.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModel } from './users/entity/users.entity';
@@ -60,6 +61,10 @@ import { UsersModule } from './users/users.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })
