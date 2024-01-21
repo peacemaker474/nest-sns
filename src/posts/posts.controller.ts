@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 
@@ -20,9 +21,8 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { PostsImagesService } from './image/images.service';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction';
 import { CustomQueryRunner } from 'src/common/decorator/query-runner.decorator';
-import { Roles } from 'src/users/decorator/roles.decorator';
-import { USER_ROLE } from 'src/users/constants/roles.enum';
 import { IsPublic } from 'src/common/decorator/public.decorator';
+import { CheckPostOwnerGuard } from './guard/check-post-owner.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -69,12 +69,13 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @UseGuards(CheckPostOwnerGuard)
   patchPost(@Param('id') id: string, @Body() postData: UpdatePostDto) {
     return this.postsService.updatePost(+id, postData);
   }
 
   @Delete(':id')
-  @Roles(USER_ROLE.ADMIN)
+  @UseGuards(CheckPostOwnerGuard)
   deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(+id);
   }
