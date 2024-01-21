@@ -7,12 +7,10 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 
 import { PostsService } from './posts.service';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -24,6 +22,7 @@ import { TransactionInterceptor } from 'src/common/interceptor/transaction';
 import { CustomQueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { Roles } from 'src/users/decorator/roles.decorator';
 import { USER_ROLE } from 'src/users/constants/roles.enum';
+import { IsPublic } from 'src/common/decorator/public.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -34,17 +33,18 @@ export class PostsController {
   ) {}
 
   @Get()
+  @IsPublic()
   getPosts(@Query() query: PaginatePostDto) {
     return this.postsService.paginatePosts(query);
   }
 
   @Get(':id')
+  @IsPublic()
   getPost(@Param('id') id: string) {
     return this.postsService.getPostById(+id);
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   @UseInterceptors(TransactionInterceptor)
   async postPosts(
     @CustomQueryRunner() qr: QueryRunner,
@@ -74,7 +74,6 @@ export class PostsController {
   }
 
   @Delete(':id')
-  @UseGuards(AccessTokenGuard)
   @Roles(USER_ROLE.ADMIN)
   deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(+id);

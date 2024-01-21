@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from '../auth.service';
+import { IS_PUBLIC_KEY } from 'src/common/decorator/public.decorator';
+import { Reflector } from '@nestjs/core';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -13,10 +15,22 @@ export class BearerTokenGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly usesService: UsersService,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
     const request = context.switchToHttp().getRequest();
+
+    if (isPublic) {
+      request.isRoutePublic = true;
+
+      return true;
+    }
 
     const rawToken = request.headers['authorization'];
 
@@ -45,6 +59,10 @@ export class AccessTokenGuard extends BearerTokenGuard {
 
     const request = context.switchToHttp().getRequest();
 
+    if (request.isRoutePublic) {
+      return true;
+    }
+
     if (request.tokenType !== 'access') {
       throw new UnauthorizedException('액세스 토큰이 아닙니다.');
     }
@@ -59,6 +77,10 @@ export class RefreshTokenGuard extends BearerTokenGuard {
     await super.canActivate(context);
 
     const request = context.switchToHttp().getRequest();
+
+    if (request.isRoutePublic) {
+      return true;
+    }
 
     if (request.tokenType !== 'refresh') {
       throw new UnauthorizedException('리프레시 토큰이 아닙니다.');
