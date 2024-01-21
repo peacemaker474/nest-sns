@@ -105,4 +105,18 @@ export class CommentsService {
 
     return id;
   }
+
+  async checkOwnerComment(userId: number, commentId: number) {
+    return this.commentsRepository.exist({
+      where: {
+        id: commentId,
+        author: {
+          id: userId,
+        },
+      },
+      relations: {
+        author: true,
+      },
+    });
+  }
 }
