@@ -64,10 +64,17 @@ export class UsersModel extends BaseModel {
   @OneToMany(() => CommentsModel, (comment) => comment.author)
   postComments: CommentsModel[];
 
+  @OneToMany(() => MessagesModel, (message) => message.author)
+  messages: MessagesModel;
+
   @ManyToMany(() => ChatsModel, (chat) => chat.users)
   @JoinTable()
   chats: ChatsModel[];
 
-  @OneToMany(() => MessagesModel, (message) => message.author)
-  messages: MessagesModel;
+  @ManyToMany(() => UsersModel, (user) => user.followees)
+  @JoinTable()
+  followers: UsersModel[];
+
+  @ManyToMany(() => UsersModel, (user) => user.followers)
+  followees: UsersModel[];
 }
