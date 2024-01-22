@@ -19,6 +19,7 @@ import { PostsModule } from './posts/posts.module';
 import { RolesGuard } from './users/guard/roles.guard';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserFollowersModel } from './users/entity/user-followers.entity';
 import { UsersModel } from './users/entity/users.entity';
 import { UsersModule } from './users/users.module';
 
@@ -42,6 +43,7 @@ import { UsersModule } from './users/users.module';
         ChatsModel,
         MessagesModel,
         CommentsModel,
+        UserFollowersModel,
       ],
       synchronize: true, // Production 환경에서는 false
     }),
