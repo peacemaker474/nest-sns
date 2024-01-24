@@ -20,6 +20,36 @@ export class PostsService {
     private readonly commonService: CommonService,
   ) {}
 
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<PostsModel>(PostsModel)
+      : this.postsRepository;
+  }
+
+  async incrementCommentCount(postId: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    await repository.increment(
+      {
+        id: postId,
+      },
+      'commentCount',
+      1,
+    );
+  }
+
+  async decrementCommentCount(postId: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    await repository.decrement(
+      {
+        id: postId,
+      },
+      'commentCount',
+      1,
+    );
+  }
+
   async getAllPosts() {
     return this.postsRepository.find({
       relations: ['author'],
@@ -52,12 +82,6 @@ export class PostsService {
     }
 
     return post;
-  }
-
-  getRepository(qr?: QueryRunner) {
-    return qr
-      ? qr.manager.getRepository<PostsModel>(PostsModel)
-      : this.postsRepository;
   }
 
   async createPost(
