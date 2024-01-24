@@ -59,6 +59,16 @@ export class UsersModel extends BaseModel {
   })
   role: USER_ROLE;
 
+  @Column({
+    default: 0,
+  })
+  followerCount: number;
+
+  @Column({
+    default: 0,
+  })
+  followeeCount: number;
+
   @OneToMany(() => PostsModel, (post) => post.author)
   posts: PostsModel[];
 
